@@ -37,7 +37,7 @@ Follow this actions and use the URL that we copied
 </p>
 
 🍟The first URL space
-* The end of the link should be : ?palabra=<Palabra> ("Palabra" it's a variable on the first action)
+* The end of the link should be : ?palabra=*Palabra* ("Palabra" it's a variable on the first action)
 * Método → GET
 
 🍟The second URL space
