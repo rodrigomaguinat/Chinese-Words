@@ -36,11 +36,11 @@ Follow this actions and use the URL that we copied
   <img src="./images/Shortcuts.png" alt="Shortcuts" width="200">
 </p>
 
-🍟The first URL 
+🍟The first URL space
 * The end of the link should be : ?palabra=<Palabra> ("Palabra" it's a variable on the first action)
 * Método → GET
 
-🍟The second URL
+🍟The second URL space
 * Método → POST.
 * “Cuerpo de la solicitud” → Formulario.  
 * “Agregar nuevo campo”:  
