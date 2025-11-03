@@ -45,4 +45,12 @@ Follow this actions and use the URL that we copied
 * “Cuerpo de la solicitud” → Formulario.  
 * “Agregar nuevo campo”:  
   * "Clave" → palabra  
-  * "Valor" → select your variable "Palabra" 
+  * "Valor" → select your variable "Palabra"
+
+----------------------------------------------------------------------------------
+
+🐿️ Last update, since the action "De lo contrario"  
+
+<p align="center">
+  <img src="./images/Modificacion1.jpeg" alt="Modificacion1" width="200">
+</p>
