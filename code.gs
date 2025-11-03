@@ -48,24 +48,64 @@ function doPost(e) {
   }
 
   const palabra = (e.parameter.palabra || '').trim();
+  const traduccionManual = (e.parameter.traduccion || '').trim();
+
   if (!palabra) {
     return ContentService.createTextOutput(
       JSON.stringify({ error: 'Falta parámetro "palabra"' })
     ).setMimeType(ContentService.MimeType.JSON);
   }
 
-  // Verificar duplicado
-  const datos = sheet.getRange('A2:A').getValues().flat().filter(String);
+  // Verificar duplicado desde la primera fila
+  const datos = sheet.getRange('A1:A').getValues().flat().filter(String);
   if (datos.map(p => p.toLowerCase()).includes(palabra.toLowerCase())) {
     return ContentService.createTextOutput(
       JSON.stringify({ error: 'Duplicado' })
     ).setMimeType(ContentService.MimeType.JSON);
   }
 
-  // Insertar la palabra al final
-  sheet.appendRow([palabra, '', '', '', '', '', '', '', '', new Date()]);
+  // Calcular la primera fila vacía
+  const fila = sheet.getLastRow() + 1;
+
+  // Columna A: palabra
+  sheet.getRange(`A${fila}`).setValue(palabra);
+
+  // Columna B: pinyin
+  sheet.getRange(`B${fila}`).setFormula(`=pinyin(A${fila})`);
+
+  // Columna C: traducción manual o fórmula zh→es
+  if (traduccionManual) {
+    sheet.getRange(`C${fila}`).setValue(traduccionManual);
+  } else {
+    // ⚠️ En español se usan punto y coma
+    sheet.getRange(`C${fila}`).setFormula(`=GOOGLETRANSLATE(A${fila};"zh-CN";"ES")`);
+  }
+
+  // Columna D: traducción zh→en
+  sheet.getRange(`D${fila}`).setFormula(`=GOOGLETRANSLATE(A${fila};"zh-CN";"EN")`);
+
+  // Columna J: fecha
+  sheet.getRange(`J${fila}`).setValue(new Date());
 
   return ContentService.createTextOutput(
-    JSON.stringify({ resultado: 'ok', palabra })
+    JSON.stringify({ resultado: 'ok', palabra, fila })
   ).setMimeType(ContentService.MimeType.JSON);
 }
+
+/**
+ * Convierte texto chino en pinyin usando la API de Google Translate (no oficial).
+ * Uso en Sheets: =pinyin(A1)
+ */
+function pinyin(texto) {
+  if (!texto) return '';
+  try {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=zh-CN&dt=rm&q=' + encodeURIComponent(texto);
+    const respuesta = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const datos = JSON.parse(respuesta.getContentText());
+    const resultado = datos[0].map(item => item[3] || item[0]).join(' ').trim();
+    return resultado;
+  } catch (e) {
+    return 'Error';
+  }
+}
+
